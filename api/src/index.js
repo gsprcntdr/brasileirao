@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(router);
 
 app.get("/", (req, res) => {
-  return res.json("Visite: https://github.com/gsprcntdr/football-api");
+  return res.json("https://github.com/gsprcntdr/football-api");
 });
 
 app.listen(process.env.PORT, () => {
