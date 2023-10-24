@@ -76,11 +76,12 @@ async function getPlayerHistory(req, res) {
   try {
     const rawExp = `
         select
-        distinct players.id as pid, players.name as pname, teams.name as tname, players.link, r.year
+        distinct players.id as pid, players.name as pname, teams.name as tname, teams.id as tid, players.link, r.year
         from players join relations r
         on r.player_id = players.id
         join teams on r.team_id = teams.id
         where players.name ilike '${player}%';`;
+
     const { rows } = await knex.raw(rawExp);
 
     const idCounts = rows.reduce((acc, item) => {
@@ -96,17 +97,29 @@ async function getPlayerHistory(req, res) {
       return res.status(400).json("No matches");
     }
 
-    const formattedPlayers = rows.reduce((result, obj) => {
-      const { pname, link, year, tname } = obj;
-      let playerEntry = result.find((entry) => entry.name === pname);
-      if (!playerEntry) {
-        playerEntry = { name: pname, link };
-        result.push(playerEntry);
+    const format = {
+      name: rows[0].pname,
+      2020: [],
+      2021: [],
+      2022: [],
+      2023: [],
+    };
+
+    const years = Object.keys(format);
+    years.pop();
+
+    for (let team of rows) {
+      for (let year of years) {
+        if (team.year == year) {
+          format[year].push({
+            name: team.tname,
+            team_id: team.tid,
+          });
+        }
       }
-      playerEntry[year] = tname;
-      return result;
-    }, []);
-    return res.status(200).json(formattedPlayers);
+    }
+
+    return res.status(200).json(format);
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(error.message);
