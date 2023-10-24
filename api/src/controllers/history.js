@@ -1,14 +1,14 @@
 const knex = require("../connection");
 
 async function getTeamHistory(req, res) {
-  let { team } = req.query;
-  if (team === undefined) {
+  let { nome } = req.query;
+  if (nome === undefined) {
     return res
       .status(400)
-      .json("Team name required: /team-history?team=[name name]");
+      .json("Necessário nome do time: /historico-time?nome=[name name]");
   }
-  if (team.indexOf(" ") !== -1) {
-    team = team.replaceAll(" ", "%");
+  if (nome.indexOf(" ") !== -1) {
+    nome = nome.replaceAll(" ", "%");
   }
   try {
     const rawExp = `
@@ -17,7 +17,7 @@ async function getTeamHistory(req, res) {
     from players join relations r
     on r.player_id = players.id
     join teams t on r.team_id = t.id
-    where t.name ilike '${team}%'
+    where t.name ilike '${nome}%'
     `;
     const { rows } = await knex.raw(rawExp);
 
@@ -29,9 +29,9 @@ async function getTeamHistory(req, res) {
     const teams = Object.keys(teamCounts);
 
     if (teams.length > 1) {
-      return res.status(400).json("Multiple teams found");
+      return res.status(400).json("Mais de um encontrado");
     } else if (teams.length === 0) {
-      return res.status(400).json("No matches");
+      return res.status(400).json("Nenhum encontrado");
     }
 
     const format = {
@@ -48,10 +48,7 @@ async function getTeamHistory(req, res) {
     for (let player of rows) {
       for (let year of years) {
         if (player.year == year) {
-          format[year].push({
-            name: player.pname,
-            player_id: player.pid,
-          });
+          format[year].push(player.pname);
           break;
         }
       }
@@ -64,14 +61,16 @@ async function getTeamHistory(req, res) {
 }
 
 async function getPlayerHistory(req, res) {
-  let { player } = req.query;
-  if (player === undefined) {
+  let { nome } = req.query;
+  if (nome === undefined) {
     return res
       .status(400)
-      .json("Player name required: /player-history?player=[name last name]");
+      .json(
+        "Necessário nome do jogador: /historico-jogador?nome=[name last name]"
+      );
   }
-  if (player.indexOf(" ") !== -1) {
-    player = player.replaceAll(" ", "%");
+  if (nome.indexOf(" ") !== -1) {
+    nome = nome.replaceAll(" ", "%");
   }
   try {
     const rawExp = `
@@ -80,7 +79,7 @@ async function getPlayerHistory(req, res) {
         from players join relations r
         on r.player_id = players.id
         join teams on r.team_id = teams.id
-        where players.name ilike '${player}%';`;
+        where players.name ilike '${nome}%';`;
 
     const { rows } = await knex.raw(rawExp);
 
@@ -92,9 +91,9 @@ async function getPlayerHistory(req, res) {
     const ids = Object.keys(idCounts);
 
     if (ids.length > 1) {
-      return res.status(400).json("Multiple players found");
+      return res.status(400).json("Mais de um encontrado");
     } else if (ids.length === 0) {
-      return res.status(400).json("No matches");
+      return res.status(400).json("Nenhum encontrado");
     }
 
     const format = {
@@ -111,10 +110,7 @@ async function getPlayerHistory(req, res) {
     for (let team of rows) {
       for (let year of years) {
         if (team.year == year) {
-          format[year].push({
-            name: team.tname,
-            team_id: team.tid,
-          });
+          format[year].push(team.tname);
         }
       }
     }

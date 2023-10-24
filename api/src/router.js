@@ -5,10 +5,10 @@ const squadFromYear = require("./controllers/squadFromYear");
 const { getTeamHistory, getPlayerHistory } = require("./controllers/history");
 const router = express();
 
-router.get("/players", getPlayers);
-router.get("/teams", getTeams);
-router.get("/squad", squadFromYear);
-router.get("/team-history", getTeamHistory);
-router.get("/player-history", getPlayerHistory);
+router.get("/jogadores", getPlayers);
+router.get("/times", getTeams);
+router.get("/equipe", squadFromYear);
+router.get("/historico-time", getTeamHistory);
+router.get("/historico-jogador", getPlayerHistory);
 
 module.exports = router;
