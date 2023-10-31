@@ -1,8 +1,8 @@
-﻿### Brasileirão 2020 - 2023
+#﻿##Brasileirão 2020 - 2023
 
 Essa API fornece as relações entre os times e jogadores que em algum momento atuaram na Série A entre os anos de 2020 e 2023, com dados coletados a partir do site da CBF.
 </br>
-URL BASE: <code>https://brasileirao-2020-2023.cyclic.cloud</code> </br>
+URL base (temporariamente desativada) <code> ~https://brasileirao-2020-2023.cyclic.cloud~ </code>   </br> 
 Por enquanto há 5 maneiras de acessar essas informações:
 
 <ul>
